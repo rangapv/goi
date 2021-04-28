@@ -1,11 +1,49 @@
 #! /bin/bash
-li=$(uname -s)
-li2="${li,,}"
+set -E
 
-u1=$(cat /etc/*-release | grep ubuntu)
-f1=$(cat /etc/*-release | grep ID= | grep fedora)
-c1=$(cat /etc/*-release | grep ID= | grep centos)
-s1=$(cat /etc/*-release | grep suse)
+li=$(uname -s)
+if [ $(echo "$li" | grep Linux) ]
+then
+  mac=""
+else
+  mac=$(sw_vers | grep Mac)
+fi
+
+
+if [ -z "$mac" ]
+then
+  u1=$(cat /etc/*-release | grep ID= | grep ubuntu)
+  f1=$(cat /etc/*-release | grep ID= | grep fedora)
+  r1=$(cat /etc/*-release | grep ID= | grep rhel)
+  c1=$(cat /etc/*-release | grep ID= | grep centos)
+  s1=$(cat /etc/*-release | grep ID= | grep sles)
+  d1=$(cat /etc/*-release | grep ID= | grep debian)
+else
+  echo "Mac is not empty"
+fi
+
+count=0
+
+goupgrade() {
+gargs="$#"
+args=("$@")
+arg1=${args[$((pargs-1))]}
+gover=${args[$((gargs-gargs))]}
+gover2=${args[$((gargs-$((gargs-1))))]}
+gover3=${args[$((gargs-$((gargs-2))))]}
+var3="/"
+wg=$gover$gover2$var3$gover3
+sudo wget "$wg"
+tar xzf $pyver3
+se1=$( echo "${pyver3}" | awk '{split($0,a,".");print a[1]"."a[2]"."a[3]}')
+se2=$( echo "${pyver3}" | awk '{split($0,a,".");print a[1]"."a[2]}')
+se3=$( echo "${pyver2}" | awk '{split($0,a,".");print a[1]"."a[2]}')
+cd $se1
+sudo ./configure --enable-optimizations
+sudo make altinstall
+slpy="python$se3"
+sudo ln -sf "/usr/local/bin/$slpy" /usr/bin/python
+}
 
 
 if [ ! -z "$u1" ]
