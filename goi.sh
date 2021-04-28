@@ -30,19 +30,17 @@ args=("$@")
 arg1=${args[$((pargs-1))]}
 gover=${args[$((gargs-gargs))]}
 gover2=${args[$((gargs-$((gargs-1))))]}
-gover3=${args[$((gargs-$((gargs-2))))]}
-var3="/"
-wg=$gover$gover2$var3$gover3
+wg=$gover$gover2
 sudo wget "$wg"
-tar xzf $pyver3
-se1=$( echo "${pyver3}" | awk '{split($0,a,".");print a[1]"."a[2]"."a[3]}')
-se2=$( echo "${pyver3}" | awk '{split($0,a,".");print a[1]"."a[2]}')
-se3=$( echo "${pyver2}" | awk '{split($0,a,".");print a[1]"."a[2]}')
-cd $se1
-sudo ./configure --enable-optimizations
-sudo make altinstall
-slpy="python$se3"
-sudo ln -sf "/usr/local/bin/$slpy" /usr/bin/python
+tar -xzf $gover2
+se3=$( echo "${gover2}" | awk '{split($0,a,".");print a[1]"."a[2]}')
+sudo mv go /usr/local 
+echo "export GOROOT=/usr/local/go" >> ~/.bashrc
+echo "export PATH=\$GOROOT/bin:\$PATH" >> ~/.bashrc
+eval "source ~/.bashrc"
+echo "GOPATH is"
+eval  '$GOPATH'
+go version
 }
 
 
@@ -66,10 +64,21 @@ then
         echo "export PATH=$PATH:/usr/lib/go-$gover/bin" >> ~/.bashrc
         echo "export GOPATH=~/go" >> ~/.bashrc
         echo "GO Installed Pls logout re-login or in a new shell to test type \"go version\" "
-fi
 
+elif [ ! -z "$r1" ]
+then
+        echo "it is a RHEL"
+        ji=$(cat /etc/*-release | grep '^ID=' |awk '{split($0,a,"\"");print a[2]}')
+        ki="${ji,,}"
+        cm1="yum -y"
+        sudo $cm1 update
+        sudo yum -y install wget
 
-if [ ! -z "$f1" ]
+#        sudo yum -y install gcc make openssl-devel bzip2-devel libffi-devel zlib-devel wget
+#        sudo yum -y install @development
+        count=1
+
+elif [ ! -z "$f1" ]
 then
         ji=$(cat /etc/*-release | grep '^ID=' |awk '{split($0,a,"=");print a[2]}')
         ki="${ji,,}"
@@ -85,9 +94,7 @@ then
         echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.bashrc
         echo "export GOPATH=~/go" >> ~/.bashrc
         echo "GO Installed Pls logout re-login or in a new shell to test type \"go version\" "
-fi
-
-if [ ! -z "$c1" ]
+elif [ ! -z "$c1" ]
 then
 	echo "IT IS CENTOS"
         ji=$(cat /etc/*-release | grep '^ID=' |awk '{split($0,a,"\"");print a[2]}')
@@ -103,4 +110,17 @@ then
         echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.bashrc
         echo "export GOPATH=~/go" >> ~/.bashrc
         echo "GO Installed Pls logout re-login or in a new shell to test type \"go version\" "
+else
+echo "The distribution cannot be determined"
 fi
+
+if [ $count > 0 ]
+then
+
+  if [ ! -z "$r1" ]
+  then
+     goupgrade https://dl.google.com/go/ go1.15.2.linux-amd64.tar.gz 
+  fi
+
+fi
+
