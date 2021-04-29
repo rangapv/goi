@@ -34,13 +34,12 @@ wg=$gover$gover2
 sudo wget "$wg"
 tar -xzf $gover2
 se3=$( echo "${gover2}" | awk '{split($0,a,".");print a[1]"."a[2]}')
+sudo rm -Rf /usr/local/go
 sudo mv go /usr/local 
 echo "export GOROOT=/usr/local/go" >> ~/.bashrc
 echo "export PATH=\$GOROOT/bin:\$PATH" >> ~/.bashrc
 eval "source ~/.bashrc"
-echo "GOPATH is"
-eval  '$GOPATH'
-go version
+eval "echo GOROOT is $GOROOT"
 }
 
 
@@ -55,15 +54,9 @@ then
 	then
    	echo "IT IS UBUNTU"
 	fi
-        echo " What version of go is required 1.8 / 1.9 "
-        read gover
-        sudo add-apt-repository ppa:gophers/archive
+        sudo add-apt-repository -y  ppa:gophers/archive
         sudo apt-get -y update
-        sudo apt-get -y install golang-$gover
-        echo " " >> ~/.bashrc
-        echo "export PATH=$PATH:/usr/lib/go-$gover/bin" >> ~/.bashrc
-        echo "export GOPATH=~/go" >> ~/.bashrc
-        echo "GO Installed Pls logout re-login or in a new shell to test type \"go version\" "
+        count=1
 
 elif [ ! -z "$r1" ]
 then
@@ -114,13 +107,26 @@ else
 echo "The distribution cannot be determined"
 fi
 
+echo "What version of go is required 1.14/1.15/1.16 "
+read gover
+
 if [ $count > 0 ]
 then
 
-  if [ ! -z "$r1" ]
+  if [ $gover = "1.15" ]
   then
+     echo "Installing go 1.15"
      goupgrade https://dl.google.com/go/ go1.15.2.linux-amd64.tar.gz 
+     eval "echo $(go version)" 
+  elif [ $gover = "1.16" ]
+  then
+     echo "Installing go 1.16"
+     goupgrade https://dl.google.com/go/ go1.16.3.linux-amd64.tar.gz
+     eval "echo $(go version)" 
+  else
+   echo "go-version not available"	  
   fi
 
 fi
+
 
