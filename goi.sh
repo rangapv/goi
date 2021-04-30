@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/bash -i
 set -E
 
 li=$(uname -s)
@@ -137,7 +137,6 @@ then
      PS1='$ '     
      bi=$(source ~/.bashrc)
      rbi=$(echo "$?")
-     echo "installing 1.16 rbi is $rbi"
      if [ $rbi = "0" ]
      then
      eval "echo $(go version)"
