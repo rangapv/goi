@@ -39,7 +39,13 @@ sudo mv go /usr/local
 echo "export GOROOT=/usr/local/go" >> ~/.bashrc
 echo "export PATH=\$GOROOT/bin:\$PATH" >> ~/.bashrc
 eval "source ~/.bashrc"
+PS1='$ '     
+bi=$(source ~/.bashrc)
+rbi=$(echo "$?")
+if [ $rbi = "0" ]
+then
 eval "echo GOROOT is $GOROOT"
+fi
 }
 
 
@@ -117,14 +123,25 @@ then
   then
      echo "Installing go 1.15"
      goupgrade https://dl.google.com/go/ go1.15.2.linux-amd64.tar.gz 
-     source ~/.bashrc
+     PS1='$ '     
+     bi=$(source ~/.bashrc)
+     rbi=$(echo "$?")
+     if [ $rbi = "0" ]
+     then  
      eval "echo $(go version)" 
+     fi
   elif [ $gover = "1.16" ]
   then
      echo "Installing go 1.16"
      goupgrade https://dl.google.com/go/ go1.16.3.linux-amd64.tar.gz
-     source ~/.bashrc
-     eval "echo $(go version)" 
+     PS1='$ '     
+     bi=$(source ~/.bashrc)
+     rbi=$(echo "$?")
+     echo "installing 1.16 rbi is $rbi"
+     if [ $rbi = "0" ]
+     then
+     eval "echo $(go version)"
+     fi
   else
    echo "go-version not available"	  
   fi
