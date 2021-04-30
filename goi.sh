@@ -117,11 +117,13 @@ then
   then
      echo "Installing go 1.15"
      goupgrade https://dl.google.com/go/ go1.15.2.linux-amd64.tar.gz 
+     source ~/.bashrc
      eval "echo $(go version)" 
   elif [ $gover = "1.16" ]
   then
      echo "Installing go 1.16"
      goupgrade https://dl.google.com/go/ go1.16.3.linux-amd64.tar.gz
+     source ~/.bashrc
      eval "echo $(go version)" 
   else
    echo "go-version not available"	  
