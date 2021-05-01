@@ -77,6 +77,14 @@ then
 #        sudo yum -y install @development
         count=1
 
+elif [ ! -z "$s1" ]
+then
+	echo "it is a SuSE"
+	cm1="zypper"
+	sudo $cm1 install -y git wget make
+        sudo $cm1 update -y
+        count=1
+
 elif [ ! -z "$f1" ]
 then
         ji=$(cat /etc/*-release | grep '^ID=' |awk '{split($0,a,"=");print a[2]}')
