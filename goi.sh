@@ -64,17 +64,14 @@ then
         sudo apt-get -y update
         count=1
 
-elif [ ! -z "$r1" ]
+elif [[ ! -z "$r1" || ! -z "$c1" ]]
 then
-        echo "it is a RHEL"
+        echo "it is a RHEL /Family"
         ji=$(cat /etc/*-release | grep '^ID=' |awk '{split($0,a,"\"");print a[2]}')
         ki="${ji,,}"
         cm1="yum -y"
         sudo $cm1 update
         sudo yum -y install wget
-
-#        sudo yum -y install gcc make openssl-devel bzip2-devel libffi-devel zlib-devel wget
-#        sudo yum -y install @development
         count=1
 
 elif [ ! -z "$s1" ]
@@ -98,22 +95,6 @@ then
         tar -xvf go$gover.linux-amd64.tar.gz
         sudo mv go /usr/local
         echo " " >> ~/.bashrc
-        echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.bashrc
-        echo "export GOPATH=~/go" >> ~/.bashrc
-        echo "GO Installed Pls logout re-login or in a new shell to test type \"go version\" "
-elif [ ! -z "$c1" ]
-then
-	echo "IT IS CENTOS"
-        ji=$(cat /etc/*-release | grep '^ID=' |awk '{split($0,a,"\"");print a[2]}')
-        ki="${ji,,}"
-	echo " What version of go is required for Fedora 1.7/1.8/1.9/1.10/1.11 "
-        read gover
-        sudo yum -y update
-        sudo yum -y install wget
-        wget https://storage.googleapis.com/golang/go$gover.linux-amd64.tar.gz
-        tar -xvf go$gover.linux-amd64.tar.gz
-        sudo mv go /usr/local
-	echo " " >> ~/.bashrc
         echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.bashrc
         echo "export GOPATH=~/go" >> ~/.bashrc
         echo "GO Installed Pls logout re-login or in a new shell to test type \"go version\" "
