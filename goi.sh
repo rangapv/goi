@@ -55,14 +55,33 @@ then
 	mi2="${mi,,}"
 	ji=$(cat /etc/*-release | grep DISTRIB_ID | awk '{split($0,a,"=");print a[2]}')
 	ki="${ji,,}"
-
-	if [ "$ki" == "ubuntu" ]
+        
+	if [ "$ki" = "ubuntu" ]
 	then
    	echo "IT IS UBUNTU"
 	fi
         sudo add-apt-repository -y  ppa:gophers/archive
         sudo apt-get -y update
         count=1
+
+
+
+elif [ ! -z "$d1" ]
+then
+        mi=$(lsb_release -cs)
+        mi2="{mi,,}"
+	ji=$(cat /etc/*-release | grep ^NAME | awk '{split($0,a,"=");print a[2]}')
+	jj=$(echo $ji | awk '{split($0,b," ");print b[1]}')
+	jk=$(echo $jj | awk '{split($0,c,"\"");print c[2]}')
+	ki="${jk,,}"
+	if [ "$ki" = "debian" ]
+	then
+   	echo "IT IS Debian"
+	fi
+        sudo apt-get -y update
+        count=1
+
+
 
 elif [[ ! -z "$r1" || ! -z "$c1" ]]
 then
