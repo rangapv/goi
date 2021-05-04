@@ -106,17 +106,10 @@ then
         ji=$(cat /etc/*-release | grep '^ID=' |awk '{split($0,a,"=");print a[2]}')
         ki="${ji,,}"
         echo "IT IS FEDORA"
-        echo " What version of go is required for Fedora 1.7/1.8/1.9/1.10/1.11 "
-        read gover
-        sudo yum -y update
-        sudo yum -y install wget
-        wget https://storage.googleapis.com/golang/go$gover.linux-amd64.tar.gz
-        tar -xvf go$gover.linux-amd64.tar.gz
-        sudo mv go /usr/local
-        echo " " >> ~/.bashrc
-        echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.bashrc
-        echo "export GOPATH=~/go" >> ~/.bashrc
-        echo "GO Installed Pls logout re-login or in a new shell to test type \"go version\" "
+        cm1="dnf"
+        sudo $cm1 -y update
+        sudo $cm1 -y install wget
+        count=1
 else
 echo "The distribution cannot be determined"
 fi
