@@ -1,27 +1,6 @@
 #! /bin/bash -i
 set -E
-
-li=$(uname -s)
-if [ $(echo "$li" | grep Linux) ]
-then
-  mac=""
-else
-  mac=$(sw_vers | grep Mac)
-fi
-
-
-if [ -z "$mac" ]
-then
-  u1=$(cat /etc/*-release | grep ID= | grep ubuntu)
-  f1=$(cat /etc/*-release | grep ID= | grep fedora)
-  r1=$(cat /etc/*-release | grep ID= | grep rhel)
-  a1=$(cat /etc/*-release | grep ID= | grep amzn)
-  c1=$(cat /etc/*-release | grep ID= | grep centos)
-  s1=$(cat /etc/*-release | grep ID= | grep sles)
-  d1=$(cat /etc/*-release | grep ID= | grep debian)
-else
-  echo "Mac is not empty"
-fi
+source <(curl -s https://raw.githubusercontent.com/rangapv/bash-source/main/s1.sh) >>/dev/null 2>&1
 
 count=0
 
@@ -49,6 +28,30 @@ eval "echo GOROOT is $GOROOT"
 fi
 }
 
+
+govercheck() {
+
+gflag=0
+gov=`which go`
+govs="$?"
+if [[ ( $govs -eq 0 ) ]]
+then
+	gflag=1
+fi
+ 
+vergo=`go version`
+vergos="$?"
+gvflag=0
+if [[ ( $vergos -eq 0 ) ]]
+then
+        gvflag=1
+        curver1=`go version | awk '{split($0,a," "); printf a[3]}' | awk '{split($0,b,".");print b[1]}'`
+	curver11=${curver1:2}
+        curver=`go version | awk '{split($0,a," "); printf a[3]}' | awk '{split($0,b,".");print b[2]}'`
+	versiongo=$curver11.$curver
+fi
+
+}
 
 if [ ! -z "$u1" ]
 then 
@@ -134,11 +137,12 @@ fi
 
 echo "What version of go is required 1.14/1.15/1.16 "
 read gover
+govercheck
 
-if [ $count > 0 ]
+
+if [[ (( $gover > $versiongo )) ]]
 then
-
-  if [ $gover = "1.15" ]
+  if [[ (( $gover = 1.15  )) ]]
   then
      echo "Installing go 1.15"
      goupgrade https://dl.google.com/go/ go1.15.2.linux-amd64.tar.gz 
@@ -149,7 +153,7 @@ then
      then  
      eval "echo $(go version)" 
      fi
-  elif [ $gover = "1.16" ]
+  elif [[ (( $gover = 1.16 )) ]]
   then
      echo "Installing go 1.16"
      goupgrade https://dl.google.com/go/ go1.16.3.linux-amd64.tar.gz
@@ -163,7 +167,8 @@ then
   else
    echo "go-version not available"	  
   fi
-
+else
+	echo "Go requiremnet is already satisifed Nothing to Install / Upgrade"
+        echo "$gov"
+	echo "$vergo"
 fi
-
-
