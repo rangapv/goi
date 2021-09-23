@@ -7,10 +7,11 @@ count=0
 goupgrade() {
 gargs="$#"
 args=("$@")
-arg1=${args[$((pargs-1))]}
-gover=${args[$((gargs-gargs))]}
-gover2=${args[$((gargs-$((gargs-1))))]}
-wg=$gover$gover2
+gover2="$args"
+
+web1="https://dl.google.com/go/"
+
+wg=$web1$gover2
 sudo wget "$wg"
 tar -xzf $gover2
 se3=$( echo "${gover2}" | awk '{split($0,a,".");print a[1]"."a[2]}')
@@ -59,11 +60,6 @@ fi
 
 if [ ! -z "$u1" ]
 then 
-	mi=$(lsb_release -cs)
-	mi2="${mi,,}"
-	ji=$(cat /etc/*-release | grep DISTRIB_ID | awk '{split($0,a,"=");print a[2]}')
-	ki="${ji,,}"
-        
 	if [ "$ki" = "ubuntu" ]
 	then
    	echo "IT IS UBUNTU"
@@ -72,16 +68,8 @@ then
         sudo apt-get -y update
         count=1
 
-
-
 elif [ ! -z "$d1" ]
 then
-        mi=$(lsb_release -cs)
-        mi2="{mi,,}"
-	ji=$(cat /etc/*-release | grep ^NAME | awk '{split($0,a,"=");print a[2]}')
-	jj=$(echo $ji | awk '{split($0,b," ");print b[1]}')
-	jk=$(echo $jj | awk '{split($0,c,"\"");print c[2]}')
-	ki="${jk,,}"
 	if [ "$ki" = "debian" ]
 	then
    	echo "IT IS Debian"
@@ -89,24 +77,8 @@ then
         sudo apt-get -y update
         count=1
 
-
-
 elif [[ ! -z "$r1" || ! -z "$c1" || ! -z "$a1" ]]
 then
-        ji=$(cat /etc/*-release | grep '^ID=' |awk '{split($0,a,"\"");print a[2]}')
-        ki="${ji,,}"
-        if [ $ki = "amzn" ]
-        then
-           echo "It is amazon AMI"
-        elif [ $ki = "rhel" ]
-        then
-           echo "It is RHEL"
-        elif [ $ki = "centos" ]
-        then
-           echo "It is centos"
-        else
-           echo "OS flavor cant be determined"
-        fi
   	cm1="yum"
         if [ true ]
 	then
@@ -139,40 +111,46 @@ else
 echo "The distribution cannot be determined"
 fi
 
-echo "What version of go is required 1.14/1.15/1.16 "
+echo "What version of go is required 1.14/1.15/1.16/1.17 "
 read gover
 govercheck
 
 
 if [[ (( $gover > $versiongo )) ]]
 then
-  if [[ (( $gover = 1.15  )) ]]
+  nogo=0
+  case $gover in 
+    1.15) 
+	    gocs=15.2
+	    ;;
+    1.16) 
+            gocs=16.8
+	    ;;
+    1.17)
+	    gocs=17.1
+	    ;;
+      *)
+	    nogo=1
+	    ;;
+  esac
+   echo "gocs is $gocs"
+  if [[ ( $nogo -eq 0 ) ]]
   then
-     echo "Installing go 1.15"
-     goupgrade https://dl.google.com/go/ go1.15.2.linux-amd64.tar.gz 
-     PS1='$ '     
-     bi=$(source ~/.bashrc)
-     rbi=$(echo "$?")
-     if [ $rbi = "0" ]
-     then  
-     eval "echo $(go version)" 
-     fi
-  elif [[ (( $gover = 1.16 )) ]]
-  then
-     echo "Installing go 1.16"
-     goupgrade https://dl.google.com/go/ go1.16.3.linux-amd64.tar.gz
-     PS1='$ '     
+     #echo "go1.$gocs.linux-amd64.tar.gz"
+     goupgrade go1.$gocs.linux-amd64.tar.gz
+     PS1='$ '
      bi=$(source ~/.bashrc)
      rbi=$(echo "$?")
      if [ $rbi = "0" ]
      then
      eval "echo $(go version)"
      fi
-  else
-   echo "go-version not available"	  
   fi
-else
-	echo "Go requiremnet is already satisifed Nothing to Install / Upgrade"
+elif [[ (( $gover < $versiongo )) ]]
+then
+        echo "Go requiremnet is already satisifed Nothing to Install / Upgrade"
         echo "$gov"
 	echo "$vergo"
+else
+   echo "go-version not available"	  
 fi
