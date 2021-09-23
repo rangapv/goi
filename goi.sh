@@ -18,6 +18,9 @@ sudo rm -Rf /usr/local/go
 sudo mv go /usr/local 
 echo "export GOROOT=/usr/local/go" >> ~/.bashrc
 echo "export PATH=\$GOROOT/bin:\$PATH" >> ~/.bashrc
+echo "export GOPATH=\$(go env GOPATH)" >> ~/.bashrc
+echo "export PATH=\$GOPATH/bin:\$PATH" >> ~/.bashrc
+
 eval "source ~/.bashrc"
 PS1='$ '     
 bi=$(source ~/.bashrc)
@@ -25,6 +28,7 @@ rbi=$(echo "$?")
 if [ $rbi = "0" ]
 then
 eval "echo GOROOT is $GOROOT"
+eval "echo GOPATH is $GOPATH"
 fi
 }
 
