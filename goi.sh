@@ -111,6 +111,9 @@ else
 echo "The distribution cannot be determined"
 fi
 
+nogo=1
+versiongo=1
+
 echo "What version of go is required 1.14/1.15/1.16/1.17 "
 read gover
 govercheck
