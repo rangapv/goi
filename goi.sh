@@ -38,14 +38,20 @@ govercheck() {
 
 gflag=0
 gov=`which go`
-govs="$?"
+govs="echo $?"
 if [[ ( $govs -eq 0 ) ]]
 then
 	gflag=1
+elif [[ ( $govs -ne 0 ) && ( ! -z $mac ) ]]
+then
+       echo "No go found in mac"
+       versiongo=0
+else
+       echo "Default install"
 fi
  
 vergo=`go version`
-vergos="$?"
+vergos="echo $?"
 gvflag=0
 if [[ ( $vergos -eq 0 ) ]]
 then
@@ -54,6 +60,11 @@ then
 	curver11=${curver1:2}
         curver=`go version | awk '{split($0,a," "); printf a[3]}' | awk '{split($0,b,".");print b[2]}'`
 	versiongo=$curver11.$curver
+elif [[ ( $vergos -ne 0 ) ]]
+then
+        versiongo=0
+else
+       echo "No defaults"
 fi
 
 }
@@ -107,6 +118,9 @@ then
 #        sudo $cm1 -y update
         sudo $cm1 -y install wget
         count=1
+elif [ ! -z "$mac" ]
+then
+     echo "inside the go install for MAc"
 else
 echo "The distribution cannot be determined"
 fi
@@ -114,7 +128,7 @@ fi
 nogo=1
 versiongo=1
 
-echo "What version of go is required 1.14/1.15/1.16/1.17 "
+echo "What version of go is required 1.15/1.16/1.17/1.18 "
 read gover
 govercheck
 
@@ -132,12 +146,15 @@ then
     1.17)
 	    gocs=17.1
 	    ;;
+    1.18)
+	    gocs=18.1
+	    ;;
       *)
 	    nogo=1
 	    ;;
   esac
    echo "gocs is $gocs"
-  if [[ ( $nogo -eq 0 ) ]]
+  if [[ ( $nogo -eq 0 ) && ( -z "$mac" ) ]]
   then
      #echo "go1.$gocs.linux-amd64.tar.gz"
      goupgrade go1.$gocs.linux-amd64.tar.gz
@@ -146,8 +163,11 @@ then
      rbi=$(echo "$?")
      if [ $rbi = "0" ]
      then
-     eval "echo $(go version)"
+        eval "echo $(go version)"
      fi
+  elif [[ ( $nogo -eq 0 ) && (! -z "$mac" ) ]]
+  then
+     echo "Installing go on MAC"
   fi
 elif [[ (( $gover < $versiongo )) ]]
 then
