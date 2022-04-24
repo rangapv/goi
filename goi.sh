@@ -1,7 +1,7 @@
-#! /bin/bash -i
+#!/bin/bash -i
 set -E
-source <(curl -s https://raw.githubusercontent.com/rangapv/bash-source/main/s1.sh) >>/dev/null 2>&1
-
+#source <(curl -s https://raw.githubusercontent.com/rangapv/bash-source/main/s1.sh) >>/dev/null 2>&1
+source /Users/rangapv/bash-source/s1.sh
 count=0
 
 goupgrade() {
@@ -17,11 +17,13 @@ tar -xzf $gover2
 se3=$( echo "${gover2}" | awk '{split($0,a,".");print a[1]"."a[2]}')
 sudo rm -Rf /usr/local/go
 sudo mv go /usr/local 
+
+if [[ ( -z "$mac" ) ]]
+then
 echo "export GOROOT=/usr/local/go" >> ~/.bashrc
 echo "export PATH=\$GOROOT/bin:\$PATH" >> ~/.bashrc
 echo "export GOPATH=\$(go env GOPATH)" >> ~/.bashrc
 echo "export PATH=\$GOPATH/bin:\$PATH" >> ~/.bashrc
-
 eval "source ~/.bashrc"
 PS1='$ '     
 bi=$(source ~/.bashrc)
@@ -31,6 +33,27 @@ then
 eval "echo GOROOT is $GOROOT"
 eval "echo GOPATH is $GOPATH"
 fi
+
+elif [[ (! -z "$mac" ) ]]
+then
+
+echo "export GOROOT=/usr/local/go" >> ~/.zprofile
+echo "export PATH=\$GOROOT/bin:\$PATH" >> ~/.zprofile
+echo "export GOPATH=\$(go env GOPATH)" >> ~/.zprofile
+echo "export PATH=\$GOPATH/bin:\$PATH" >> ~/.zprofile
+eval "source ~/.zprofile"
+bi=$(source ~/.zprofile)
+rbi="$?"
+if [ $rbi = "0" ]
+then
+eval "echo GOROOT is $GOROOT"
+eval "echo GOPATH is $GOPATH"
+fi
+else
+   echo "No sourcing to do"
+
+fi
+
 }
 
 
@@ -38,7 +61,7 @@ govercheck() {
 
 gflag=0
 gov=`which go`
-govs="echo $?"
+govs="$?"
 if [[ ( $govs -eq 0 ) ]]
 then
 	gflag=1
@@ -51,7 +74,7 @@ else
 fi
  
 vergo=`go version`
-vergos="echo $?"
+vergos="$?"
 gvflag=0
 if [[ ( $vergos -eq 0 ) ]]
 then
@@ -132,10 +155,10 @@ echo "What version of go is required 1.15/1.16/1.17/1.18 "
 read gover
 govercheck
 
+nogo=0
 
 if [[ (( $gover > $versiongo )) ]]
 then
-  nogo=0
   case $gover in 
     1.15) 
 	    gocs=15.2
@@ -144,16 +167,18 @@ then
             gocs=16.8
 	    ;;
     1.17)
-	    gocs=17.1
+	    gocs=17.8
 	    ;;
     1.18)
-	    gocs=18.1
+	    gocs=18
 	    ;;
       *)
 	    nogo=1
 	    ;;
   esac
    echo "gocs is $gocs"
+   echo "nogo is $nogo"
+   echo "mac is $mac"
   if [[ ( $nogo -eq 0 ) && ( -z "$mac" ) ]]
   then
      #echo "go1.$gocs.linux-amd64.tar.gz"
@@ -168,6 +193,7 @@ then
   elif [[ ( $nogo -eq 0 ) && (! -z "$mac" ) ]]
   then
      echo "Installing go on MAC"
+     goupgrade go1.$gocs.darwin-arm64.tar.gz
   fi
 elif [[ (( $gover < $versiongo )) ]]
 then
