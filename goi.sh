@@ -170,7 +170,7 @@ then
 	    gocs=17.8
 	    ;;
     1.18)
-	    gocs=18
+	    gocs=18.3
 	    ;;
       *)
 	    nogo=1
