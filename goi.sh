@@ -151,7 +151,7 @@ fi
 nogo=1
 versiongo=1
 
-echo "What version of go is required 1.15/1.16/1.17/1.18 "
+echo "What version of go is required 1.16/1.17/1.18/1.19 "
 read gover
 govercheck
 
@@ -160,8 +160,8 @@ nogo=0
 if [[ (( $gover > $versiongo )) ]]
 then
   case $gover in 
-    1.15) 
-	    gocs=15.2
+    1.19) 
+	    gocs=19.3
 	    ;;
     1.16) 
             gocs=16.8
