@@ -12,7 +12,14 @@ gover2="$args"
 web1="https://dl.google.com/go/"
 
 wg=$web1$gover2
-sudo wget "$wg"
+
+ssud=`sudo wget "$wg"`
+ssuds="$?"
+if [[ ($ssuds -ne 0) ]]
+then
+	echo "Error downloading Binary from the Go repo double check version and re-run"
+	exit
+fi
 tar -xzf $gover2
 se3=$( echo "${gover2}" | awk '{split($0,a,".");print a[1]"."a[2]}')
 sudo rm -Rf /usr/local/go
@@ -92,6 +99,13 @@ fi
 
 }
 
+goreqver () {
+
+ver1="$@"
+ver2=$( echo "$ver1" | awk '{split($0,a,"."); print a[2]"."a[3]}')
+gocs="$ver2"
+}
+
 if [ ! -z "$u1" ]
 then 
 	if [ "$ki" = "ubuntu" ]
@@ -154,31 +168,16 @@ versiongo=1
 echo "What version of go is required 1.16/1.17/1.18/1.19 "
 read gover
 govercheck
-
+gocs=0
 nogo=0
 
 if [[ (( $gover > $versiongo )) ]]
 then
-  case $gover in 
-    1.19) 
-	    gocs=19.3
-	    ;;
-    1.16) 
-            gocs=16.8
-	    ;;
-    1.17)
-	    gocs=17.8
-	    ;;
-    1.18)
-	    gocs=18.3
-	    ;;
-      *)
-	    nogo=1
-	    ;;
-  esac
-   echo "gocs is $gocs"
-   echo "nogo is $nogo"
-   echo "mac is $mac"
+   
+	
+   goreqver "$gover"
+	
+	
   if [[ ( $nogo -eq 0 ) && ( -z "$mac" ) ]]
   then
      #echo "go1.$gocs.linux-amd64.tar.gz"
