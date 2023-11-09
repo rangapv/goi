@@ -25,17 +25,60 @@ fi
 se3=$( echo "${gover2}" | awk '{split($0,a,".");print a[1]"."a[2]}')
 `sudo rm -Rf /usr/local/go`
 smv=`sudo mv ./go /usr/local/`
-echo "smv is $smv"
+#echo "smv is $smv"
 
 if [[ ( -z "$mac" ) ]]
 then
-#echo "export GOROOT=/usr/local/go" >> ~/.bashrc
+
+gp1=`cat $HOME/.bashrc | grep "export GOPATH="`
+gp1s="$?"
+gp11=`cat $HOME/.bashrc | grep ":/usr/local/go/bin"`
+gp11s="$?"
+gp13=`cat $HOME/.bashrc | grep "GOROOT"`
+gp13s="$?"
+
+gp2=`cat $HOME/.profile | grep "export GOPATH="`
+gp2s="$?"
+gp21=`cat $HOME/.profile | grep ":/usr/local/go/bin"`
+gp21s="$?"
+gp23=`cat $HOME/.profile | grep "GOROOT"`
+gp23s="$?"
+
+if [[ ( $gp1s != "0" ) ]]
+then
+	echo "export GOPATH=/usr/local/go" >> ~/.bashrc
+fi
+if [[ ( $gp2s != "0" ) ]]
+then
+	echo "export GOPATH=/usr/local/go" >> ~/.profile
+fi
 #echo "export PATH=\$GOROOT/bin:\$PATH" >> ~/.bashrc
 #echo "export GOPATH=/usr/local/go" >> ~/.bashrc
 #echo "export PATH=\$GOPATH/bin:\$PATH" >> ~/.bashrc
-echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.profile
+if [[ ( $gp11s != "0" ) ]]
+then
 echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.bashrc
+echo "inside path for bashrc"
+fi
+
+if [[ ( $gp21s != "0" ) ]]
+then
+echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.profile
+echo "inside path for profile"
+fi
+
+if [[ ( $gp13s != "0" ) ]]
+then
+	echo "export GOROOT=~" >> ~/.bashrc
+fi
+if [[ ( $gp23s != "0" ) ]]
+then
+	echo "export GOROOT=~" >> ~/.profile
+fi
+
+
 eval "source ~/.bashrc"
+eval "source ~/.profile"
 PS1='$ '     
 bi=$(source ~/.bashrc)
 rbi=$(echo "$?")
@@ -43,6 +86,9 @@ if [ $rbi = "0" ]
 then
 eval "echo GOROOT is $GOROOT"
 eval "echo GOPATH is $GOPATH"
+`source ~/.bashrc`
+`source ~/.profile`
+
 fi
 
 elif [[ (! -z "$mac" ) ]]
@@ -73,32 +119,34 @@ govercheck() {
 gflag=0
 gov=`which go`
 govs="$?"
-if [[ ( $govs -eq 0 ) ]]
+if [[ ( $govs = "0" ) ]]
 then
 	gflag=1
-elif [[ ( $govs -ne 0 ) && ( ! -z $mac ) ]]
+ 
+vergo=`go version`
+vergos="$?"
+gvflag=0
+	if [[ ( $vergos = "0" ) ]]
+	then
+        	gvflag=1
+        	curver1=`go version | awk '{split($0,a," "); printf a[3]}' | awk '{split($0,b,".");print b[1]}'`
+		curver11=${curver1:2}
+        	curver=`go version | awk '{split($0,a," "); printf a[3]}' | awk '{split($0,b,".");print b[2]}'`
+		curentver=`go version | awk '{split($0,a," "); printf a[3]}' | awk '{l=split($0,b,"."); for (i=2;i<l;i++) print b[i]"."b[i+1]; }'`
+		versiongo="$curver11.$curentver"
+	elif [[ ( $vergos != "0" ) ]]
+	then
+        versiongo=0
+	else
+       	echo "No defaults"
+	fi
+
+elif [[ ( $govs != "0" ) && ( ! -z $mac ) ]]
 then
        echo "No go found in mac"
        versiongo=0
 else
        echo "Default install"
-fi
- 
-vergo=`go version`
-vergos="$?"
-gvflag=0
-if [[ ( $vergos -eq 0 ) ]]
-then
-        gvflag=1
-        curver1=`go version | awk '{split($0,a," "); printf a[3]}' | awk '{split($0,b,".");print b[1]}'`
-	curver11=${curver1:2}
-        curver=`go version | awk '{split($0,a," "); printf a[3]}' | awk '{split($0,b,".");print b[2]}'`
-	versiongo=$curver11.$curver
-elif [[ ( $vergos -ne 0 ) ]]
-then
-        versiongo=0
-else
-       echo "No defaults"
 fi
 
 }
@@ -169,18 +217,14 @@ fi
 nogo=1
 versiongo=1
 
-echo "What version of go is required 1.16/1.17/1.18/1.19/1.20.11/1.21.4 ?"
+echo "What version of go is required 1.18/1.19/1.20.11/1.21.4 ?"
 read gover
 govercheck
 gocs=0
 nogo=0
-
-if [[ (( $gover > $versiongo )) ]]
+if [[ ( $gover > $versiongo ) ]]
 then
-   
-	
    goreqver "$gover"
-	
 	
   if [[ ( $nogo -eq 0 ) && ( -z "$mac" ) ]]
   then
@@ -198,9 +242,14 @@ then
      echo "Installing go on MAC"
      goupgrade go1.$gocs.darwin-arm64.tar.gz
   fi
-elif [[ (( $gover < $versiongo )) ]]
+elif [[ ( $gover = $versiongo ) ]]
 then
         echo "Go requiremnet is already satisifed Nothing to Install / Upgrade"
+        echo "$gov"
+	echo "$vergo"
+elif [[ ( $gover < $versiongo ) ]]
+then
+        echo "Go requiremnet is already higher version than requested"
         echo "$gov"
 	echo "$vergo"
 else
