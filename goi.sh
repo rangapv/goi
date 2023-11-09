@@ -1,7 +1,7 @@
 #!/bin/bash -i
 set -E
-#source <(curl -s https://raw.githubusercontent.com/rangapv/bash-source/main/s1.sh) >>/dev/null 2>&1
-source /Users/rangapv/bash-source/s1.sh
+source <(curl -s https://raw.githubusercontent.com/rangapv/bash-source/main/s1.sh) >>/dev/null 2>&1
+#source /Users/rangapv/bash-source/s1.sh
 count=0
 
 goupgrade() {
@@ -9,7 +9,8 @@ gargs="$#"
 args=("$@")
 gover2="$args"
 
-web1="https://dl.google.com/go/"
+#web1="https://dl.google.com/go/"
+web1="https://go.dev/dl/"
 
 wg=$web1$gover2
 
@@ -20,17 +21,20 @@ then
 	echo "Error downloading Binary from the Go repo double check version and re-run"
 	exit
 fi
-tar -xzf $gover2
+`sudo tar -xzf "$gover2"`
 se3=$( echo "${gover2}" | awk '{split($0,a,".");print a[1]"."a[2]}')
-sudo rm -Rf /usr/local/go
-sudo mv go /usr/local 
+`sudo rm -Rf /usr/local/go`
+smv=`sudo mv ./go /usr/local/`
+echo "smv is $smv"
 
 if [[ ( -z "$mac" ) ]]
 then
-echo "export GOROOT=/usr/local/go" >> ~/.bashrc
-echo "export PATH=\$GOROOT/bin:\$PATH" >> ~/.bashrc
-echo "export GOPATH=\$(go env GOPATH)" >> ~/.bashrc
-echo "export PATH=\$GOPATH/bin:\$PATH" >> ~/.bashrc
+#echo "export GOROOT=/usr/local/go" >> ~/.bashrc
+#echo "export PATH=\$GOROOT/bin:\$PATH" >> ~/.bashrc
+#echo "export GOPATH=/usr/local/go" >> ~/.bashrc
+#echo "export PATH=\$GOPATH/bin:\$PATH" >> ~/.bashrc
+echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.profile
+echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.bashrc
 eval "source ~/.bashrc"
 PS1='$ '     
 bi=$(source ~/.bashrc)
@@ -165,7 +169,7 @@ fi
 nogo=1
 versiongo=1
 
-echo "What version of go is required 1.16/1.17/1.18/1.19 "
+echo "What version of go is required 1.16/1.17/1.18/1.19/1.20.11/1.21.4 ?"
 read gover
 govercheck
 gocs=0
